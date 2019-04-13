@@ -22,15 +22,17 @@ tns plugin add nativescript-signalr-core
 	`
 	import { Observable } from 'tns-core-modules/data/observable';
     import { SignalrCore } from 'nativescript-signalr-core';
+    declare var require;
+    var WebSocket = require('nativescript-websockets');
     export class HelloWorldModel extends Observable {
        public message: string;
        private signalrCore: SignalrCore;
      
        constructor() {
-         super();
+
          this.signalrCore = new SignalrCore();
      
-         this.signalrCore.start('http://212.150.192.76/ChatHub').subscribe((res) => {});
+         this.signalrCore.start('http://server.com/ChatHub').subscribe((res) => {});
          this.signalrCore.on('messagereceived', (args) => {
            console.log(args)
          });
