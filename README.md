@@ -18,7 +18,7 @@ tns plugin add nativescript-signalr-core
 
 ## How To use nativescript-signalr-core ?
    ##In NativeScript
-	`
+	```TypeScript
 	import { Observable } from 'tns-core-modules/data/observable';
     import { SignalrCore } from 'nativescript-signalr-core';
     declare var require;
@@ -41,7 +41,7 @@ tns plugin add nativescript-signalr-core
            this.signalrCore.invoke('SendMessage', 'android', 'room', 'Android');
          });
        }
-    `
+    ```
     
     
 ## In NativeScript + Angular 7    
@@ -79,6 +79,8 @@ constructor(private zone: NgZone, private http: HttpClient, private cd: ChangeDe
    ####.invoke(...args)
 
 ## Limitations
+Is not supported by the browser at this time
 Not tested on IOS
+
 
 
