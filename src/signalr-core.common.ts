@@ -27,7 +27,6 @@ export class Common extends Observable {
     const self = this;
     this.makeRequest('POST', `${httpURL}/negotiate`, (err, data) => {
       if (err) {
-        console.log(err);
       } else {
         let connId = this.socketUrl;
         if (typeof data === 'object') {
@@ -107,7 +106,6 @@ export class Common extends Observable {
   }
 
   private createInvocation(methodName: string, args, nonblocking) {
-    console.log(methodName);
     if (nonblocking) {
       return {
         arguments: args,

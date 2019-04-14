@@ -79,7 +79,7 @@ constructor(private zone: NgZone, private http: HttpClient, private cd: ChangeDe
    ####.invoke(...args)
 
 ## Limitations
-Is not supported by the browser at this time
+
 Not tested on IOS
 
 

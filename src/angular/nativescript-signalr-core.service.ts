@@ -1,8 +1,7 @@
-import { Injectable } from '@angular/core';
 import {BehaviorSubject} from "rxjs";
 declare var WebSocket;
 
-@Injectable()
+
 
 export class SignalrCore {
     private isConnected: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -109,7 +108,6 @@ export class SignalrCore {
     }
 
     private createInvocation(methodName: string, args, nonblocking) {
-        console.log(methodName);
         if (nonblocking) {
             return {
                 arguments: args,

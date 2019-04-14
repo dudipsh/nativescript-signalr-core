@@ -1,2 +1,2 @@
  //signalrCore
- export * from './nativescript-signalr-core.module';
+ export * from './nativescript-signalr-core.service';

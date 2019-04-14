@@ -4,7 +4,7 @@ import { registerElement } from "nativescript-angular/element-registry";
 import {SignalrCore} from './nativescript-signalr-core.service';
 
 @NgModule({
-    providers: [SignalrCore],
-    exports: [SignalrCore],
+    providers: [],
+    exports: [],
 })
 export class SignalrCoreModule { }
