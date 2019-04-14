@@ -1,6 +1,6 @@
 {
     "name": "nativescript-signalr-core",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Nativescript Signalr-core / Signalr 2",
     "main": "signalr-core",
     "typings": "index.d.ts",
@@ -38,8 +38,8 @@
         "iOS"
     ],
     "author": {
-        "name": "Your Name",
-        "email": "youremail@yourdomain.com"
+        "name": "Dudi Partush",
+        "email": "dudipsh@gmail.com"
     },
     "bugs": {
         "url": "https://github.com/dudipsh/nativescript-signalr-core/issues"

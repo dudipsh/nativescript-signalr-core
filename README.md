@@ -16,9 +16,8 @@ tns plugin add nativescript-websockets
 tns plugin add nativescript-signalr-core
 ```
 
-## Usage 
-
-	
+## How To use nativescript-signalr-core ?
+   ##In NativeScript
 	`
 	import { Observable } from 'tns-core-modules/data/observable';
     import { SignalrCore } from 'nativescript-signalr-core';
@@ -43,6 +42,41 @@ tns plugin add nativescript-signalr-core
          });
        }
     `
+    
+    
+## In NativeScript + Angular 7    
+```TypeScript
+@Component({
+    selector: 'app-home',
+    templateUrl: './home.component.html',
+    styleUrls: ['./home.component.scss'],
+})
+export class HomeComponent implements OnInit, OnDestroy {
+    
+constructor(private zone: NgZone, private http: HttpClient, private cd: ChangeDetectorRef) {
+        this.signalrCore = new SignalrCore();
+        this.signalrCore.start('http://server.com/ChatHub').then(() => {})
+        this.zone.run(() => {
+            this.signalrCore.on('myServerEvent', (data) => {
+                this.messages.push(data);
+                 this.cd.detectChanges();
+            });
+        });
+
+    }
+    joinRoom() {
+        this.signalrCore.invoke('JoinRoom', 'roomName');
+    }
+    sendMessage() {
+     this.signalrCore.invoke('SendMessage', 'message', 'roomName', 'user');
+    }
+}
+```
+
+## API
+   ####.start(url: string): boolean
+   ####.on(event: string, data: any) : args
+   ####.invoke(...args)
 
 ## Limitations
 Not tested on IOS
