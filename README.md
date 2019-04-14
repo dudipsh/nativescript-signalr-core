@@ -10,20 +10,32 @@ thanks for nathan@master-technology.com
 [nativescript-websockets](https://www.npmjs.com/package/nativescript-websockets)
 ## Installation
 
-Install the plugin
+
 ```javascript
 tns plugin add nativescript-websockets
-tns plugin add nativescript-signalr-core
+npm install nativescript-signalr-core --save
 ```
 
+
 ## How To use nativescript-signalr-core ?
-   ##In NativeScript
-	```TypeScript
-	import { Observable } from 'tns-core-modules/data/observable';
+######main.tns.ts
+```TypeScript
+  var WebSocket = require('nativescript-websockets');
+
+````
+######Home.component.ts
+```TypeScript
+    import { Observable } from 'tns-core-modules/data/observable';
     import { SignalrCore } from 'nativescript-signalr-core';
     declare var require;
-    var WebSocket = require('nativescript-websockets');
-    export class HelloWorldModel extends Observable {
+  
+    
+    @Component({
+        selector: 'app-home',
+        templateUrl: './home.component.html',
+        styleUrls: ['./home.component.scss'],
+    })
+    export class HomeComponent implements OnInit {
        public message: string;
        private signalrCore: SignalrCore;
      
@@ -40,8 +52,8 @@ tns plugin add nativescript-signalr-core
            this.signalrCore.invoke('JoinRoom', 'room');
            this.signalrCore.invoke('SendMessage', 'android', 'room', 'Android');
          });
-       }
-    ```
+       };
+```
     
     
 ## In NativeScript + Angular 7    
@@ -74,9 +86,9 @@ constructor(private zone: NgZone, private http: HttpClient, private cd: ChangeDe
 ```
 
 ## API
-   ####.start(url: string): boolean
-   ####.on(event: string, data: any) : args
-   ####.invoke(...args)
+#####.start(url: string): boolean
+#####.on(event: string, data: any) : args
+#####.invoke(...args)
 
 ## Limitations
 
