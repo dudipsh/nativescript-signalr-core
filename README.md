@@ -18,18 +18,16 @@ npm install nativescript-signalr-core --save
 
 
 ## How To use nativescript-signalr-core ?
-######main.tns.ts
+###### main.tns.ts
 ```TypeScript
-  var WebSocket = require('nativescript-websockets');
-
+    declare var require;
+    var WebSocket = require('nativescript-websockets');
 ````
-######Home.component.ts
+###### Home.component.ts
 ```TypeScript
     import { Observable } from 'tns-core-modules/data/observable';
     import { SignalrCore } from 'nativescript-signalr-core';
-    declare var require;
-  
-    
+   
     @Component({
         selector: 'app-home',
         templateUrl: './home.component.html',
@@ -53,6 +51,7 @@ npm install nativescript-signalr-core --save
            this.signalrCore.invoke('SendMessage', 'android', 'room', 'Android');
          });
        };
+    }
 ```
     
     
@@ -86,9 +85,9 @@ constructor(private zone: NgZone, private http: HttpClient, private cd: ChangeDe
 ```
 
 ## API
-#####.start(url: string): boolean
-#####.on(event: string, data: any) : args
-#####.invoke(...args)
+##### .start(url: string): boolean
+##### .on(event: string, data: any) : args
+##### .invoke(...args)
 
 ## Limitations
 
