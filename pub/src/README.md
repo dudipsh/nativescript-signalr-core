@@ -24,11 +24,39 @@ npm install nativescript-signalr-core --save
     var WebSocket = require('nativescript-websockets');
 ````
 ###### Home.component.ts
-## In NativeScript + Angular 7  
 ```TypeScript
-import {Component, OnInit, NgZone, ChangeDetectorRef} from '@angular/core';
-import { SignalrCore } from 'nativescript-signalr-core/angular';
+    import { Observable } from 'tns-core-modules/data/observable';
+    import { SignalrCore } from 'nativescript-signalr-core';
+   
+    @Component({
+        selector: 'app-home',
+        templateUrl: './home.component.html',
+        styleUrls: ['./home.component.scss'],
+    })
+    export class HomeComponent implements OnInit {
+       public message: string;
+       private signalrCore: SignalrCore;
+     
+       constructor() {
 
+         this.signalrCore = new SignalrCore();
+     
+         this.signalrCore.start('http://server.com/ChatHub').subscribe((res) => {});
+         this.signalrCore.on('messagereceived', (args) => {
+           console.log(args)
+         });
+         this.signalrCore.on('connected', (data) => {
+           this.message = 'connected';
+           this.signalrCore.invoke('JoinRoom', 'room');
+           this.signalrCore.invoke('SendMessage', 'android', 'room', 'Android');
+         });
+       };
+    }
+```
+    
+    
+## In NativeScript + Angular 7    
+```TypeScript
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
@@ -36,7 +64,7 @@ import { SignalrCore } from 'nativescript-signalr-core/angular';
 })
 export class HomeComponent implements OnInit, OnDestroy {
     
-constructor(private zone: NgZone, private cd: ChangeDetectorRef) {
+constructor(private zone: NgZone, private http: HttpClient, private cd: ChangeDetectorRef) {
         this.signalrCore = new SignalrCore();
         this.signalrCore.start('http://server.com/ChatHub').then(() => {})
         this.zone.run(() => {
