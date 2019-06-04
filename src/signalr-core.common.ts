@@ -3,7 +3,7 @@ import {BehaviorSubject} from "rxjs";
 declare var WebSocket;
 
 export class Common extends Observable {
-  private isConnected: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private isConnected: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   private websocket;
   private methods = {};
   private callbacks = {};
@@ -22,42 +22,66 @@ export class Common extends Observable {
 
   public start(httpURL) {
 
-    this.socketUrl = httpURL.replace(/(http)(s)?\:\/\//, 'ws$2://');
-    this.socketUrl += '?id=';
-    const self = this;
-    this.makeRequest('POST', `${httpURL}/negotiate`, (err, data) => {
-      if (err) {
-      } else {
-        let connId = this.socketUrl;
-        if (typeof data === 'object') {
-          connId = data.connectionId;
-        } else {
-          const _data = JSON.parse(data);
-          connId = _data.connectionId;
-        }
-        this.socketUrl += connId;
-        self.openSocketConnection(this.socketUrl).then((res) => {
-          this.isConnected.next(true);
+    return new Promise((resolve, reject) => {
+      const run = () => {
+        this.socketUrl = httpURL.replace(/(http)(s)?\:\/\//, 'ws$2://');
+        this.socketUrl += '?id=';
+        const self = this;
+        this.makeRequest('POST', `${httpURL}/negotiate`, (err, data) => {
+          if (err) {
+            reject(err)
+          } else {
+            let connId = this.socketUrl;
+            if (typeof data === 'object') {
+              connId = data.connectionId;
+            } else {
+              const _data = JSON.parse(data);
+              connId = _data.connectionId;
+            }
+            this.socketUrl += connId;
+            return self.openSocketConnection(this.socketUrl)
+                .then((res) => {
+                  if (res) {
+                    this.isConnected.next(true);
+                    resolve(true)
+                  }
+                });
+          }
         });
+      };
+      if (this.websocket && this.websocket.readyState && this.websocket.readyState !== WebSocketStatus.Closed) {
+        this.close();
+        this.isConnected.next(false);
+        reject('Error');
+        run();
+
+      } else {
+        run();
       }
+
     });
-    return this.isConnected.asObservable();
   }
 
-  private async openSocketConnection(socketUrl) {
-    const p = new Promise((resolve, reject) => {
+  private openSocketConnection(socketUrl): Promise<any> {
+    return new Promise((resolve, reject) => {
       this.websocket = new WebSocket(socketUrl, this.recordSeparator [JSON.stringify(this.protocol)]);
       this.websocket.onopen = (event) => {
         this.websocket.send(JSON.stringify({'protocol': 'json', 'version': 1}));
         this.websocket.send(this.recordSeparator);
       };
       this.websocket.onmessage = (data: any) => this._onMessage(data);
+      this.websocket.onclose = this.close();
       this.websocket.onerror = (err) => reject(err);
       resolve(this.websocket);
     });
-    await p.then((res) => {
-      return res;
-    });
+  }
+
+  public close() {
+    if (this.websocket) {
+      this.websocket.close();
+      this.isConnected.next(false);
+    }
+
   }
 
   public on(methodName: string, newMethod: (...args: any[]) => void) {
@@ -82,7 +106,8 @@ export class Common extends Observable {
       args[_i - 1] = arguments[_i];
     }
     const invocationDescriptor = this.createInvocation(methodName, args, false);
-    const p = new Promise((resolve, reject) => {
+    let _invocationEvent =  null;
+    return new Promise((resolve, reject) => {
       this.callbacks[invocationDescriptor.invocationId] = (invocationEvent, error) => {
         if (error) {
           reject(error);
@@ -101,8 +126,9 @@ export class Common extends Observable {
       };
       const message = this.protocol.writeMessage(invocationDescriptor);
       this.websocket.send(message);
+      resolve({data: TextMessageFormat.parse(message), date: new Date()});
+
     });
-    return p;
   }
 
   private createInvocation(methodName: string, args, nonblocking) {
@@ -147,6 +173,14 @@ export class Common extends Observable {
     };
     xhr.send();
   }
+}
+
+export enum WebSocketStatus {
+  Connecting = 0,
+  Open = 1,
+  Closing = 2,
+  Closed = 3
+
 }
 
 export enum MessageType {
