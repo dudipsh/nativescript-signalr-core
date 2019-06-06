@@ -8,13 +8,20 @@ export declare class SignalrCore {
     private roomId;
     private socketUrl;
     private protocol;
-    start(httpURL: any): import("rxjs").Observable<boolean>;
+    start(httpURL: any): Promise<{}>;
     private openSocketConnection;
+    close(): void;
     on(methodName: string, newMethod: (...args: any[]) => void): void;
     invoke(methodName: any, ...args: any[]): Promise<{}>;
     private createInvocation;
     private _onMessage;
     private makeRequest;
+}
+export declare enum WebSocketStatus {
+    Connecting = 0,
+    Open = 1,
+    Closing = 2,
+    Closed = 3
 }
 export declare enum MessageType {
     Invocation = 1,

@@ -30,6 +30,7 @@ export class Common extends Observable {
         this.makeRequest('POST', `${httpURL}/negotiate`, (err, data) => {
           if (err) {
             reject(err)
+            return false;
           } else {
             let connId = this.socketUrl;
             if (typeof data === 'object') {
@@ -39,11 +40,12 @@ export class Common extends Observable {
               connId = _data.connectionId;
             }
             this.socketUrl += connId;
+            // @ts-ignore
             return self.openSocketConnection(this.socketUrl)
                 .then((res) => {
                   if (res) {
                     this.isConnected.next(true);
-                    resolve(true)
+                    resolve(true);
                   }
                 });
           }
@@ -53,10 +55,10 @@ export class Common extends Observable {
         this.close();
         this.isConnected.next(false);
         reject('Error');
-        run();
+        return run();
 
       } else {
-        run();
+        return run();
       }
 
     });

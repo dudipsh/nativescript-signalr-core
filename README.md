@@ -1,6 +1,6 @@
 # Nativescript Signalr Core
 
-Plugin for signalr core
+Plugin for signalr core in NativeScript
 All my code is LICENSED under the MIT License
 
 ## Requirements
@@ -15,9 +15,16 @@ thanks for nathan@master-technology.com
 tns plugin add nativescript-websockets
 npm install nativescript-signalr-core --save
 ```
+## Android 
+###### AndroidManifest.xml
+````Xml
+<uses-permission android:name="android.permission.INTERNET"/>
+<application android:usesCleartextTraffic="true">
+````
 
 
-## How To use nativescript-signalr-core ?
+
+## How To use nativescript signalr core ?
 ###### main.tns.ts
 ```TypeScript
     declare var require;
@@ -40,15 +47,18 @@ constructor(private zone: NgZone, private cd: ChangeDetectorRef) {
         this.signalrCore = new SignalrCore();
         this.signalrCore.start('http://server.com/ChatHub').then(() => {})
         this.zone.run(() => {
-            this.signalrCore.on('myServerEvent', (data) => {
-                this.messages.push(data);
-                 this.cd.detectChanges();
+            this.signalrCore.on('myServerEvent', (isConnected) => {
+                if(isConnected) {
+                    console.log('Connected')
+                    this.cd.detectChanges();
+                }
             });
         });
 
     }
     joinRoom() {
-        this.signalrCore.invoke('JoinRoom', 'roomName');
+        this.signalrCore.invoke('JoinRoom', 'roomName')
+        .then((res) => { console.log(res) }); // Optional
     }
     sendMessage() {
      this.signalrCore.invoke('SendMessage', 'message', 'roomName', 'user');
@@ -57,13 +67,11 @@ constructor(private zone: NgZone, private cd: ChangeDetectorRef) {
 ```
 
 ## API
-##### .start(url: string): boolean
+##### .start(url: string): Promise<boolean>
 ##### .on(event: string, data: any) : args
-##### .invoke(...args)
+##### .close()
+##### .invoke(...args): (data, date)
 
-## Limitations
-
-Not tested on IOS
 
 
 

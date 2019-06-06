@@ -23,15 +23,15 @@ export class SignalrCore {
 
     public start(httpURL) {
 
-        return new Promise((resolve, reject) => {
+         new Promise((resolve, reject) => {
             const run = () => {
                 this.socketUrl = httpURL.replace(/(http)(s)?\:\/\//, 'ws$2://');
                 this.socketUrl += '?id=';
                 const self = this;
                 // @ts-ignore
-                this.makeRequest('POST', `${httpURL}/negotiate`, (err, data) => {
+               return this.makeRequest('POST', `${httpURL}/negotiate`, (err, data: any) => {
                     if (err) {
-                        reject(err)
+                        reject(err);
                     } else {
                         let connId = this.socketUrl;
                         if (typeof data === 'object') {
@@ -45,7 +45,7 @@ export class SignalrCore {
                             .then((res) => {
                                 if (res) {
                                     this.isConnected.next(true);
-                                    resolve(true)
+                                    resolve(true);
                                 }
                             });
                     }

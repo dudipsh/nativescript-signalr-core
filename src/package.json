@@ -1,6 +1,6 @@
 {
     "name": "nativescript-signalr-core",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "description": "Nativescript Signalr-core / Signalr 2",
     "main": "signalr-core",
     "typings": "index.d.ts",
