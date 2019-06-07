@@ -71,7 +71,8 @@ constructor(private zone: NgZone, private cd: ChangeDetectorRef) {
 ##### .on(event: string, data: any) : args
 ##### .close()
 ##### .invoke(...args): (data, date)
-
+##### .getStatus$(): observable<{id: number, name: string}>
+##### .getStatus(): string<{id: number, name: string}>
 
 
 

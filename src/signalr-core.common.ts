@@ -4,6 +4,8 @@ declare var WebSocket;
 
 export class Common extends Observable {
   private isConnected: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  private _status: BehaviorSubject<Status> = new BehaviorSubject<Status>(null);
+  public _getStatus: Status = {name: 'No Start', id: -1};
   private websocket;
   private methods = {};
   private callbacks = {};
@@ -19,7 +21,17 @@ export class Common extends Observable {
       return TextMessageFormat.write(JSON.stringify(message));
     }
   };
+  private setStatus(status: Status) {
+    this._status.next(status);
+    this._getStatus = status;
+  }
 
+  public getStatus$() {
+    return this._status.asObservable();
+  }
+  public getStatus() {
+    return this._getStatus;
+  }
   public start(httpURL) {
 
     return new Promise((resolve, reject) => {
@@ -27,12 +39,16 @@ export class Common extends Observable {
         this.socketUrl = httpURL.replace(/(http)(s)?\:\/\//, 'ws$2://');
         this.socketUrl += '?id=';
         const self = this;
+        // @ts-ignore
         this.makeRequest('POST', `${httpURL}/negotiate`, (err, data) => {
+          this.setStatus({id: 0, name: 'Start negotiate'});
           if (err) {
-            reject(err)
+            reject(err);
+            this.setStatus({id: -1, name: 'Error negotiate'});
             return false;
           } else {
             let connId = this.socketUrl;
+            this.setStatus({id: 1, name: 'Ok, negotiate'});
             if (typeof data === 'object') {
               connId = data.connectionId;
             } else {
@@ -40,12 +56,14 @@ export class Common extends Observable {
               connId = _data.connectionId;
             }
             this.socketUrl += connId;
-            // @ts-ignore
             return self.openSocketConnection(this.socketUrl)
+            // @ts-ignore
                 .then((res) => {
+                  this.setStatus({id: 2, name: 'Socket Opened'});
                   if (res) {
                     this.isConnected.next(true);
                     resolve(true);
+                    return true;
                   }
                 });
           }
@@ -53,14 +71,12 @@ export class Common extends Observable {
       };
       if (this.websocket && this.websocket.readyState && this.websocket.readyState !== WebSocketStatus.Closed) {
         this.close();
-        this.isConnected.next(false);
         reject('Error');
         return run();
 
       } else {
         return run();
       }
-
     });
   }
 
@@ -74,16 +90,19 @@ export class Common extends Observable {
       this.websocket.onmessage = (data: any) => this._onMessage(data);
       this.websocket.onclose = this.close();
       this.websocket.onerror = (err) => reject(err);
-      resolve(this.websocket);
+      return resolve(this.websocket);
     });
   }
 
   public close() {
-    if (this.websocket) {
-      this.websocket.close();
-      this.isConnected.next(false);
-    }
-
+    return new Promise((resolve, reject) => {
+      if (this.websocket && this.websocket.readyState !== WebSocketStatus.Closed) {
+        this.websocket.close();
+        resolve('SignalR - Connection closed!');
+        this.setStatus({id: -1, name: 'Socket closed!'});
+      }
+      reject('Error - Connection already close!');
+    });
   }
 
   public on(methodName: string, newMethod: (...args: any[]) => void) {
@@ -110,6 +129,12 @@ export class Common extends Observable {
     const invocationDescriptor = this.createInvocation(methodName, args, false);
     let _invocationEvent =  null;
     return new Promise((resolve, reject) => {
+      if (!this.websocket) {
+        return reject('Error - did you call start(hubUrl) ?')
+      }
+      if (this.websocket && this.websocket.readyState === 3) {
+        return reject('Error - socket is not connected')
+      }
       this.callbacks[invocationDescriptor.invocationId] = (invocationEvent, error) => {
         if (error) {
           reject(error);
@@ -213,3 +238,8 @@ export class TextMessageFormat {
     return messages;
   }
 }
+export class Status {
+  name: string;
+  id: number;
+}
+
