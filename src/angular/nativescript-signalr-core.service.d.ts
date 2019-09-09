@@ -1,5 +1,7 @@
 export declare class SignalrCore {
     private isConnected;
+    private _status;
+    _getStatus: Status;
     private websocket;
     private methods;
     private callbacks;
@@ -8,9 +10,12 @@ export declare class SignalrCore {
     private roomId;
     private socketUrl;
     private protocol;
+    private setStatus;
+    getStatus$(): import("rxjs").Observable<Status>;
+    getStatus(): Status;
     start(httpURL: any): Promise<{}>;
     private openSocketConnection;
-    close(): void;
+    close(): Promise<{}>;
     on(methodName: string, newMethod: (...args: any[]) => void): void;
     invoke(methodName: any, ...args: any[]): Promise<{}>;
     private createInvocation;
@@ -37,4 +42,8 @@ export declare class TextMessageFormat {
     static RecordSeparator: string;
     static write(output: string): string;
     static parse(input: string): string[];
+}
+export declare class Status {
+    name: string;
+    id: number;
 }

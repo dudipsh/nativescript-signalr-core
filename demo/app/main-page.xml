@@ -3,4 +3,5 @@
   <StackLayout class="p-20">
     <Label text="{{ message }}" class="t-20 text-center c-black" textWrap="true"/>
   </StackLayout>
+  <Button tap="{{ connectToServer }}" text="conntect"/>
 </Page>

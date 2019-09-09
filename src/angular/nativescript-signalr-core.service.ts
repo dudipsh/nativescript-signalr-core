@@ -1,4 +1,5 @@
 import {BehaviorSubject} from 'rxjs';
+import {SignalRCoreRHeaders} from "../signalr-core.common";
 declare var WebSocket;
 
 
@@ -33,7 +34,7 @@ export class SignalrCore {
     public getStatus() {
         return this._getStatus;
     }
-    public start(httpURL) {
+    public start(httpURL, header?: SignalRCoreRHeaders) {
 
         return new Promise((resolve, reject) => {
             const run = () => {
@@ -41,7 +42,7 @@ export class SignalrCore {
                 this.socketUrl += '?id=';
                 const self = this;
                 // @ts-ignore
-                this.makeRequest('POST', `${httpURL}/negotiate`, (err, data) => {
+                this.makeRequest(header, 'POST', `${httpURL}/negotiate`, (err, data) => {
                     this.setStatus({id: 0, name: 'Start negotiate'});
                     if (err) {
                         reject(err);
@@ -80,6 +81,7 @@ export class SignalrCore {
             }
         });
     }
+
 
     private openSocketConnection(socketUrl): Promise<any> {
         return new Promise((resolve, reject) => {
@@ -190,9 +192,12 @@ export class SignalrCore {
         }
     }
 
-    private makeRequest(method, url, done) {
+    private makeRequest(header: SignalRCoreRHeaders, method, url, done) {
         const xhr = new XMLHttpRequest();
         xhr.open(method, url);
+        if (header) {
+            xhr.setRequestHeader(header.key, header.value);
+        }
         xhr.onload = function () {
             done(null, xhr.response);
         };

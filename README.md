@@ -30,6 +30,7 @@ npm install nativescript-signalr-core --save
     declare var require;
     var WebSocket = require('nativescript-websockets');
 ````
+
 ###### Home.component.ts
 ## In NativeScript + Angular 7  
 ```TypeScript
@@ -42,10 +43,14 @@ import { SignalrCore } from 'nativescript-signalr-core/angular';
     styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit, OnDestroy {
-    
+      header: SignalRCoreRHeaders;
+
 constructor(private zone: NgZone, private cd: ChangeDetectorRef) {
         this.signalrCore = new SignalrCore();
-        this.signalrCore.start('http://server.com/ChatHub').then(() => {})
+        // this.header Optional.
+        this.header = new SignalRCoreRHeaders('Authorization', 'myToken');
+
+        this.signalrCore.start('http://server.com/ChatHub', this.header).then(() => {})
         this.zone.run(() => {
             this.signalrCore.on('myServerEvent', (isConnected) => {
                 if(isConnected) {
@@ -64,15 +69,20 @@ constructor(private zone: NgZone, private cd: ChangeDetectorRef) {
      this.signalrCore.invoke('SendMessage', 'message', 'roomName', 'user');
     }
 }
+
+```
+## In NativeScript Core
+```TypeScript
+ 
 ```
 
 ## API
-##### .start(url: string): Promise<boolean>
+##### .start(url: string, header?: SignalRCoreRHeaders): Promise<boolean>
 ##### .on(event: string, data: any) : args
 ##### .close()
 ##### .invoke(...args): (data, date)
 ##### .getStatus$(): observable<{id: number, name: string}>
 ##### .getStatus(): string<{id: number, name: string}>
-
+##### SignalRCoreRHeaders = { key: string, value: string }
 
 
