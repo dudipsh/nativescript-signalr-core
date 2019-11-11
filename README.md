@@ -33,7 +33,8 @@ npm install nativescript-signalr-core --save
 
 ###### Home.component.ts
 ## In NativeScript + Angular 7  
-```TypeScript
+```typescript jsx
+
 import {Component, OnInit, NgZone, ChangeDetectorRef} from '@angular/core';
 import { SignalrCore } from 'nativescript-signalr-core/angular';
 
@@ -42,47 +43,47 @@ import { SignalrCore } from 'nativescript-signalr-core/angular';
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomeComponent implements OnInit {
       header: SignalRCoreRHeaders;
 
-constructor(private zone: NgZone, private cd: ChangeDetectorRef) {
+    constructor(private zone: NgZone, private cd: ChangeDetectorRef) {
         this.signalrCore = new SignalrCore();
-        // this.header Optional.
-        this.header = new SignalRCoreRHeaders('Authorization', 'myToken');
-
-        this.signalrCore.start('http://server.com/ChatHub', this.header).then(() => {})
-        this.zone.run(() => {
-            this.signalrCore.on('myServerEvent', (isConnected) => {
-                if(isConnected) {
-                    console.log('Connected')
-                    this.cd.detectChanges();
-                }
-            });
+        this.header = new SignalRCoreRHeaders('Authorization', 'myToken');    //(this.header Optional)
+        this.signalrCore.on('connected', (data) => {
+             console.log('connected');
         });
 
     }
-    joinRoom() {
-        this.signalrCore.invoke('JoinRoom', 'roomName')
-        .then((res) => { console.log(res) }); // Optional
+    connectToServer() {
+        this.signalrCore.start('http://server.com/ChatHub', this.header).then((isConnected: boolean) => {
+            console.log('isConnected? ', isConnected);
+        });
     }
-    sendMessage() {
-     this.signalrCore.invoke('SendMessage', 'message', 'roomName', 'user');
+
+    invoke() {
+        this.signalrCore.invoke('initializeDeviceAsync', '');
     }
-}
+
+    stop() {
+        this.signalrCore.close().then((res) => {
+            console.log('closed...', res);
+        });
+    }
 
 ```
-## In NativeScript Core
-```TypeScript
+
+
+ ## API
  
-```
+ ##### .start(url: string, header?: SignalRCoreRHeaders): Promise<boolean>
+ ##### .on(event: string, data: any) : args
+ ##### .close()
+ ##### .invoke(...args): (data, date)
+ ##### .getStatus$(): observable<{id: number, name: string}>
+ ##### .getStatus(): string<{id: number, name: string}>
+ ##### SignalRCoreRHeaders = { key: string, value: string }
 
-## API
-##### .start(url: string, header?: SignalRCoreRHeaders): Promise<boolean>
-##### .on(event: string, data: any) : args
-##### .close()
-##### .invoke(...args): (data, date)
-##### .getStatus$(): observable<{id: number, name: string}>
-##### .getStatus(): string<{id: number, name: string}>
-##### SignalRCoreRHeaders = { key: string, value: string }
+
+
 
 

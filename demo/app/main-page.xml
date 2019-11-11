@@ -2,6 +2,10 @@
   xmlns:ui="nativescript-signalr-core">
   <StackLayout class="p-20">
     <Label text="{{ message }}" class="t-20 text-center c-black" textWrap="true"/>
+    <Button tap="{{ connectToServer }}" text="conntect"/>
+    <Button tap="{{ invoke }}" text="invoke..."/>
+    <Button tap="{{ stop }}" text="Stop"/>
   </StackLayout>
-  <Button tap="{{ connectToServer }}" text="conntect"/>
+
 </Page>
+

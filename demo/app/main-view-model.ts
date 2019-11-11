@@ -1,30 +1,40 @@
-import { Observable } from 'tns-core-modules/data/observable';
+import {Observable} from 'tns-core-modules/data/observable';
 
-import {SignalrCore, SignalRCoreRHeaders} from "nativescript-signalr-core";
+import {SignalrCore} from "../../src";
+
+declare var WebSocket;
 
 export class HelloWorldModel extends Observable {
-  public message: string;
-  private signalrCore: SignalrCore;
-  private hubUrl = 'http://myServer.com/messageshub';
-  header: SignalRCoreRHeaders;
-  constructor() {
-    super();
-    this.header = new SignalRCoreRHeaders('Authorization', 'myToken');  // optional
-    this.signalrCore = new SignalrCore();
+    public message: string;
+    private signalrCore: SignalrCore;
+    private hubUrl = 'http://dev.api.mydomin.com/signalr';
 
+    constructor() {
+        super();
+        // this.header = new SignalRCoreRHeaders('Authorization', 'myToken');  // optional
+        this.signalrCore = new SignalrCore();
+        this.signalrCore.on('connected', (data) => {
+            console.log('connected');
+        });
 
-    this.signalrCore.on('messageshub', (args) => {
-      console.log(args);
-    });
-    this.signalrCore.on('connected', (data) => {
-      this.message = 'connected';
-      this.signalrCore.invoke('JoinRoom', 'room');
-      this.signalrCore.invoke('SendMessage', 'android', 'room', 'Android');
-    });
-  }
+        this.signalrCore.on('initializeDeviceAsync', (data) => {
+            console.log('*initializeDeviceAsync*');
+        });
+    }
 
     connectToServer() {
-      this.signalrCore.start(this.hubUrl, this.header).then((res) => {});
+        this.signalrCore.start(this.hubUrl).then((isConnected: boolean) => {
+            console.log('isConnected? ', isConnected);
+        });
+    }
 
-  }
+    invoke() {
+        this.signalrCore.invoke('initializeDeviceAsync', '');
+    }
+
+    stop() {
+        this.signalrCore.close().then((res) => {
+            console.log('closed...', res);
+        });
+    }
 }

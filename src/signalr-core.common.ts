@@ -181,10 +181,16 @@ export class Common extends Observable {
   private _onMessage(event: MessageEvent) {
     const {data, target} = event;
     const parseData = TextMessageFormat.parse(data);
-    const parseTarget = JSON.parse(parseData[0]);
-    if (parseTarget && parseTarget['type'] && parseTarget['type'] !== 3) {
-      if (parseTarget['type'] === MessageType.Invocation && parseTarget.target && this.methods[parseTarget.target.toLowerCase()]) {
-        this.methods[parseTarget.target.toLowerCase()][0](parseTarget);
+    const parseDataList = TextMessageFormat.parse(data);
+    for(var i in parseDataList) {
+      const parseTarget = JSON.parse(parseDataList[i]);
+      if (parseTarget && parseTarget['type']) {
+        if (parseTarget['type'] === MessageType.Completion && parseTarget.invocationId && this.callbacks[parseTarget.invocationId]) {
+          this.callbacks[parseTarget.invocationId](parseTarget, parseTarget.error);
+        }
+        else if (parseTarget['type'] === MessageType.Invocation && parseTarget.target && this.methods[parseTarget.target.toLowerCase()]) {
+          this.methods[parseTarget.target.toLowerCase()][0](parseTarget);
+        }
       }
     }
   }
