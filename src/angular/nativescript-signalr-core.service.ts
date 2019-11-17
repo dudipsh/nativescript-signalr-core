@@ -206,8 +206,8 @@ export class SignalrCore {
         xhr.onload = function () {
             done(null, xhr.response);
         };
-        xhr.onerror = function () {
-            done(xhr.response);
+        xhr.onerror = function (err) {
+            done(xhr.response || err);
         };
         xhr.send();
     }
