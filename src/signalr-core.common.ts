@@ -86,9 +86,17 @@ export class Common extends Observable {
       this.websocket.onopen = (event) => {
         this.websocket.send(JSON.stringify({'protocol': 'json', 'version': 1}));
         this.websocket.send(this.recordSeparator);
+        if (this.methods["connected"]) {
+          this.methods["connected"][0]();
+        }
       };
       this.websocket.onmessage = (data: any) => this._onMessage(data);
-      this.websocket.onclose = this.close();
+      this.websocket.onclose = () => {
+        if (this.methods["disconnected"]) {
+          this.methods["disconnected"][0]();
+        }
+        this.close();
+      }
       this.websocket.onerror = (err) => reject(err);
       return resolve(this.websocket);
     });

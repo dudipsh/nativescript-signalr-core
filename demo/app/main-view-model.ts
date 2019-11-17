@@ -13,10 +13,12 @@ export class HelloWorldModel extends Observable {
         super();
         // this.header = new SignalRCoreRHeaders('Authorization', 'myToken');  // optional
         this.signalrCore = new SignalrCore();
-        this.signalrCore.on('connected', (data) => {
+        this.signalrCore.on('connected', () => {
             console.log('connected');
         });
-
+        this.signalrCore.on('disconnected', () => {
+        	console.log("disconnected");
+        });
         this.signalrCore.on('initializeDeviceAsync', (data) => {
             console.log('*initializeDeviceAsync*');
         });
