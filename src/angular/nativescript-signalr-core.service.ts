@@ -91,7 +91,12 @@ export class SignalrCore {
                 this.websocket.send(this.recordSeparator);
             };
             this.websocket.onmessage = (data: any) => this._onMessage(data);
-            this.websocket.onclose = this.close();
+            this.websocket.onclose = (data: any) => { 
+                this.close(); 
+                if(this.methods['disconnected']) {
+                    this.methods['disconnected'][0](data);
+                }
+            };        
             this.websocket.onerror = (err) => reject(err);
             return resolve(this.websocket);
         });
