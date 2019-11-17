@@ -1,7 +1,7 @@
 import {BehaviorSubject} from 'rxjs';
 import {SignalRCoreRHeaders} from "../signalr-core.common";
-declare var WebSocket;
 
+declare var WebSocket;
 
 
 export class SignalrCore {
@@ -23,6 +23,7 @@ export class SignalrCore {
             return TextMessageFormat.write(JSON.stringify(message));
         }
     };
+
     private setStatus(status: Status) {
         this._status.next(status);
         this._getStatus = status;
@@ -31,9 +32,11 @@ export class SignalrCore {
     public getStatus$() {
         return this._status.asObservable();
     }
+
     public getStatus() {
         return this._getStatus;
     }
+
     public start(httpURL, header?: SignalRCoreRHeaders) {
 
         return new Promise((resolve, reject) => {
@@ -91,12 +94,12 @@ export class SignalrCore {
                 this.websocket.send(this.recordSeparator);
             };
             this.websocket.onmessage = (data: any) => this._onMessage(data);
-            this.websocket.onclose = (data: any) => { 
-                this.close(); 
-                if(this.methods['disconnected']) {
-                    this.methods['disconnected'][0](data);
+            this.websocket.onclose = () => {
+                if (this.methods["disconnected"]) {
+                    this.methods["disconnected"][0]();
                 }
-            };        
+                this.close();
+            }
             this.websocket.onerror = (err) => reject(err);
             return resolve(this.websocket);
         });
@@ -135,13 +138,13 @@ export class SignalrCore {
             args[_i - 1] = arguments[_i];
         }
         const invocationDescriptor = this.createInvocation(methodName, args, false);
-        let _invocationEvent =  null;
+        let _invocationEvent = null;
         return new Promise((resolve, reject) => {
             if (!this.websocket) {
-                return reject('Error - did you call start(hubUrl) ?')
+                return reject('Error - did you call start(hubUrl) ?');
             }
             if (this.websocket && this.websocket.readyState === 3) {
-                return reject('Error - socket is not connected')
+                return reject('Error - socket is not connected');
             }
             this.callbacks[invocationDescriptor.invocationId] = (invocationEvent, error) => {
                 if (error) {
@@ -249,6 +252,7 @@ export class TextMessageFormat {
         return messages;
     }
 }
+
 export class Status {
     name: string;
     id: number;

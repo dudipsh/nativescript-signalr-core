@@ -96,7 +96,7 @@ export class Common extends Observable {
           this.methods["disconnected"][0]();
         }
         this.close();
-      }
+      };
       this.websocket.onerror = (err) => reject(err);
       return resolve(this.websocket);
     });
@@ -212,8 +212,8 @@ export class Common extends Observable {
     xhr.onload = function () {
       done(null, xhr.response);
     };
-    xhr.onerror = function () {
-      done(xhr.response);
+    xhr.onerror = function (err) {
+      done(xhr.response || err);
     };
     xhr.send();
   }
