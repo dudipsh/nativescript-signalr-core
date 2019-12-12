@@ -1,13 +1,12 @@
 {
-    "name": "nativescript-signalr-core",
-    "version": "1.0.11",
+    "name": "@treemple/nativescript-signalr-core",
+    "version": "1.1.17",
     "description": "Nativescript Signalr-core / Signalr 2",
     "main": "signalr-core",
     "typings": "index.d.ts",
-
     "repository": {
         "type": "git",
-        "url": "https://github.com/dudipsh/nativescript-signalr-core.git"
+        "url": "git://github.com/treemple/nativescript-signalr-core.git"
     },
     "scripts": {
         "tsc": "tsc",
