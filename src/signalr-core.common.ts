@@ -56,6 +56,16 @@ export class Common extends Observable {
               connId = _data.connectionId;
             }
             this.socketUrl += connId;
+
+            //var queryStr="";
+            // if(header && header.keyValues){
+            //     for(var key in header.keyValues){
+            //         queryStr+="&"+key+"="+header.keyValues[key];
+            //     }
+            // }
+
+            //this.socketUrl+=queryStr;
+            
             return self.openSocketConnection(this.socketUrl)
             // @ts-ignore
                 .then((res) => {
@@ -206,9 +216,12 @@ export class Common extends Observable {
   private makeRequest(header: SignalRCoreRHeaders, method, url, done) {
     const xhr = new XMLHttpRequest();
     xhr.open(method, url);
-    if (header) {
-      xhr.setRequestHeader(header.key, header.value);
+    if (header && header.keyValues) {
+      for(var key in header.keyValues){
+          xhr.setRequestHeader(key, header.keyValues[key]);    
+      }
     }
+   
     xhr.onload = function () {
       done(null, xhr.response);
     };
@@ -261,11 +274,9 @@ export class Status {
 }
 
 export class SignalRCoreRHeaders {
-  key: string;
-  value: string;
-
-  constructor(key: string, value: string) {
-    this.key = key;
-    this.value = value;
+  keyValues:{[key: string]: string}
+  
+  constructor(keyValues:{[key: string]: string}){
+    this.keyValues=keyValues;
   }
 }
