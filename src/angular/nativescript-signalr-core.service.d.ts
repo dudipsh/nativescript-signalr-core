@@ -1,3 +1,4 @@
+import { SignalRCoreRHeaders } from "../signalr-core.common";
 export declare class SignalrCore {
     private isConnected;
     private _status;
@@ -13,7 +14,7 @@ export declare class SignalrCore {
     private setStatus;
     getStatus$(): import("rxjs").Observable<Status>;
     getStatus(): Status;
-    start(httpURL: any): Promise<{}>;
+    start(httpURL: any, header?: SignalRCoreRHeaders): Promise<{}>;
     private openSocketConnection;
     close(): Promise<{}>;
     on(methodName: string, newMethod: (...args: any[]) => void): void;
