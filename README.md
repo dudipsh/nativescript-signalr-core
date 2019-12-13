@@ -70,6 +70,14 @@ export class HomeComponent implements OnInit {
         });
     }
 
+## Headers initilization:
+var headers={};
+headers["Custom-Auth-UserName"]=this.username;
+headers["Custom-Auth-Token"]=this.userToken
+var header = new SignalRCoreRHeaders(headers);
+
+
+
 ```
 
 
