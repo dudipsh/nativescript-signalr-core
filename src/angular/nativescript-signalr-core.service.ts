@@ -62,14 +62,14 @@ export class SignalrCore {
                         }
                         this.socketUrl += connId;
 
-                        var queryStr="";
-                        if(header && header.keyValues){
-                            for(var key in header.keyValues){
-                                queryStr+="&"+key+"="+header.keyValues[key];
-                            }
-                        }
+                        // var queryStr="";
+                        // if(header && header.keyValues){
+                        //     for(var key in header.keyValues){
+                        //         queryStr+="&"+key+"="+header.keyValues[key];
+                        //     }
+                        // }
 
-                        this.socketUrl+=queryStr;
+                        // this.socketUrl+=queryStr;
 
                         return self.openSocketConnection(this.socketUrl)
                         // @ts-ignore
