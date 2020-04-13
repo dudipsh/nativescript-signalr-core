@@ -36,19 +36,11 @@ export class Common extends Observable {
 
     return new Promise((resolve, reject) => {
       const run = () => {
-        let queryString = "?";
-        let idParam = "id=";
-        let urlPieces = httpURL.split("?");
-        if (urlPieces.length > 1) {
-          queryString += urlPieces[1];
-          httpURL = urlPieces[0];
-          idParam = "&" + idParam;
-        }
         this.socketUrl = httpURL.replace(/(http)(s)?\:\/\//, 'ws$2://');
-        this.socketUrl += queryString + idParam;
+        this.socketUrl += '?id=';
         const self = this;
         // @ts-ignore
-        this.makeRequest(header, 'POST', `${httpURL}/negotiate` + queryString, (err, data) => {
+        this.makeRequest(header, 'POST', `${httpURL}/negotiate`, (err, data) => {
           this.setStatus({id: 0, name: 'Start negotiate'});
           if (err) {
             reject(err);
