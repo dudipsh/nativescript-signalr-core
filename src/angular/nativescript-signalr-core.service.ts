@@ -1,5 +1,5 @@
-import {BehaviorSubject} from 'rxjs';
-import {SignalRCoreRHeaders} from "../signalr-core.common";
+import { BehaviorSubject } from 'rxjs';
+import { SignalRCoreRHeaders } from "../signalr-core.common";
 
 declare var WebSocket;
 
@@ -7,7 +7,7 @@ declare var WebSocket;
 export class SignalrCore {
     private isConnected: BehaviorSubject<any> = new BehaviorSubject<any>(null);
     private _status: BehaviorSubject<Status> = new BehaviorSubject<Status>(null);
-    public _getStatus: Status = {name: 'No Start', id: -1};
+    public _getStatus: Status = { name: 'No Start', id: -1 };
     private websocket;
     private methods = {};
     private callbacks = {};
@@ -41,19 +41,27 @@ export class SignalrCore {
 
         return new Promise((resolve, reject) => {
             const run = () => {
+                let queryString = "?";
+                let idParam = "id=";
+                let urlPieces = httpURL.split("?");
+                if (urlPieces.length > 1) {
+                    queryString += urlPieces[1];
+                    httpURL = urlPieces[0];
+                    idParam = "&" + idParam;
+                }
                 this.socketUrl = httpURL.replace(/(http)(s)?\:\/\//, 'ws$2://');
-                this.socketUrl += '?id=';
+                this.socketUrl += queryString + idParam;
                 const self = this;
                 // @ts-ignore
-                this.makeRequest(header, 'POST', `${httpURL}/negotiate`, (err, data) => {
-                    this.setStatus({id: 0, name: 'Start negotiate'});
+                this.makeRequest(header, 'POST', `${httpURL}/negotiate` + queryString, (err, data) => {
+                    this.setStatus({ id: 0, name: 'Start negotiate' });
                     if (err) {
                         reject(err);
-                        this.setStatus({id: -1, name: 'Error negotiate'});
+                        this.setStatus({ id: -1, name: 'Error negotiate' });
                         return false;
                     } else {
                         let connId = this.socketUrl;
-                        this.setStatus({id: 1, name: 'Ok, negotiate'});
+                        this.setStatus({ id: 1, name: 'Ok, negotiate' });
                         if (typeof data === 'object') {
                             connId = data.connectionId;
                         } else {
@@ -62,9 +70,9 @@ export class SignalrCore {
                         }
                         this.socketUrl += connId;
                         return self.openSocketConnection(this.socketUrl)
-                        // @ts-ignore
+                            // @ts-ignore
                             .then((res) => {
-                                this.setStatus({id: 2, name: 'Socket Opened'});
+                                this.setStatus({ id: 2, name: 'Socket Opened' });
                                 if (res) {
                                     this.isConnected.next(true);
                                     resolve(true);
@@ -88,9 +96,9 @@ export class SignalrCore {
 
     private openSocketConnection(socketUrl): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.websocket = new WebSocket(socketUrl, this.recordSeparator [JSON.stringify(this.protocol)]);
+            this.websocket = new WebSocket(socketUrl, this.recordSeparator[JSON.stringify(this.protocol)]);
             this.websocket.onopen = (event) => {
-                this.websocket.send(JSON.stringify({'protocol': 'json', 'version': 1}));
+                this.websocket.send(JSON.stringify({ 'protocol': 'json', 'version': 1 }));
                 this.websocket.send(this.recordSeparator);
             };
             this.websocket.onmessage = (data: any) => this._onMessage(data);
@@ -110,7 +118,7 @@ export class SignalrCore {
             if (this.websocket && this.websocket.readyState !== WebSocketStatus.Closed) {
                 this.websocket.close();
                 resolve('SignalR - Connection closed!');
-                this.setStatus({id: -1, name: 'Socket closed!'});
+                this.setStatus({ id: -1, name: 'Socket closed!' });
             }
             reject('Error - Connection already close!');
         });
@@ -164,7 +172,7 @@ export class SignalrCore {
             };
             const message = this.protocol.writeMessage(invocationDescriptor);
             this.websocket.send(message);
-            resolve({data: TextMessageFormat.parse(message), date: new Date()});
+            resolve({ data: TextMessageFormat.parse(message), date: new Date() });
 
         });
     }
@@ -190,7 +198,7 @@ export class SignalrCore {
     }
 
     private _onMessage(event: MessageEvent) {
-        const {data, target} = event;
+        const { data, target } = event;
         const parseData = TextMessageFormat.parse(data);
         const parseTarget = JSON.parse(parseData[0]);
         if (parseTarget && parseTarget['type'] && parseTarget['type'] !== 3) {
