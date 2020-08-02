@@ -1,15 +1,18 @@
+import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { SignalRCoreRHeaders } from "../signalr-core.common";
+import { SignalRCoreRHeaders } from "nativescript-signalr-core";
 
 declare var WebSocket;
 
-
+@Injectable({
+  providedIn: 'root'
+})
 export class SignalrCore {
     private isConnected: BehaviorSubject<any> = new BehaviorSubject<any>(null);
     private _status: BehaviorSubject<Status> = new BehaviorSubject<Status>(null);
     public _getStatus: Status = { name: 'No Start', id: -1 };
     private websocket;
-    private methods = {};
+    private methods: { [key: string]: Array<any> } = {};
     private callbacks = {};
     private id: string;
     private recordSeparator = String.fromCharCode(0x1e);
@@ -139,6 +142,20 @@ export class SignalrCore {
         }
 
         this.methods[methodName].push(newMethod);
+    }
+
+    off(methodName: string, callback?: (...args: any[]) => void) {
+      if (this.methods && this.methods[methodName]) {
+        if (callback) {
+          for (const c of this.methods[methodName]) {
+            if (c === callback) {
+              delete this.methods[methodName];
+            }
+          }
+        } else {
+          delete this.methods[methodName];
+        }
+      }
     }
 
     public invoke(methodName, ...args: any[]) {
